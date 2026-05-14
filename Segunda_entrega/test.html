@@ -57,12 +57,14 @@
     const baseColor = 'lightblue';
     const highlightColor = 'blue';
 
+    // 3. INYECTAMOS EL DICCIONARIO COMO UN OBJETO JAVASCRIPT
+    const genreMessages = {"Pop": "El <b>Pop</b> domina las listas de streaming globales con ritmos pegadizos.<br>", "Rock": "El <b>Rock</b> mantiene una base de oyentes leales con un consumo muy estable a lo largo de los a\u00f1os.", "Hip Hop": "El <b>Hip Hop</b> ha mostrado el mayor crecimiento porcentual desde 2018.", "Classical": "Informaci\u00f3n faltante para <b>Classical</b>.", "Country": "Informaci\u00f3n faltante para <b>Country</b>.", "EDM": "Informaci\u00f3n faltante para <b>EDM</b>.", "Folk": "Informaci\u00f3n faltante para <b>Folk</b>.", "Hip-Hop": "Informaci\u00f3n faltante para <b>Hip-Hop</b>.", "Indie": "Informaci\u00f3n faltante para <b>Indie</b>.", "Jazz": "Informaci\u00f3n faltante para <b>Jazz</b>.", "Metal": "Informaci\u00f3n faltante para <b>Metal</b>.", "R&B": "Informaci\u00f3n faltante para <b>R&B</b>.", "Reggaeton": "Informaci\u00f3n faltante para <b>Reggaeton</b>."};
+
     const plotDiv = document.getElementById('plot');
     const infoBox = document.getElementById('info-box');
     const genreName = document.getElementById('genre-name');
     const genreInfo = document.getElementById('genre-info');
 
-    // Variable para rastrear el género seleccionado actualmente
     let currentSelectedGenre = null;
 
     Plotly.newPlot(plotDiv, fig.data, fig.layout, {
@@ -74,7 +76,11 @@
 
     function showInfoBox(genre) {
       genreName.textContent = genre;
-      genreInfo.innerHTML = 'Info for <b>' + genre ; 
+
+      // 4. BUSCAMOS EL MENSAJE ESPECÍFICO DEL GÉNERO
+      // (Si por alguna razón no existe en el diccionario, usamos un texto de respaldo)
+      genreInfo.innerHTML = genreMessages[genre] || 'Información no disponible para este género.'; 
+
       infoBox.style.display = 'block';
     }
 
@@ -83,12 +89,10 @@
         const clickedTrace = fig.data[data.points[0].curveNumber];
         const clickedGenre = clickedTrace.legendgroup;
 
-        // Si se hace clic en el género que YA está seleccionado, lo deseleccionamos
         if (currentSelectedGenre === clickedGenre) {
-          currentSelectedGenre = null; // Reiniciamos el estado
-          infoBox.style.display = 'none'; // Ocultamos la caja de información
+          currentSelectedGenre = null; 
+          infoBox.style.display = 'none'; 
 
-          // Restauramos todos los trazos a su color base y opacidad completa
           fig.data.forEach(trace => {
             trace.opacity = 1;
             if (trace.mode === 'lines') {
@@ -104,9 +108,8 @@
             }
           });
         } 
-        // Si es un género nuevo (o el primero), lo seleccionamos
         else {
-          currentSelectedGenre = clickedGenre; // Actualizamos el estado
+          currentSelectedGenre = clickedGenre; 
           showInfoBox(clickedGenre);
 
           fig.data.forEach(trace => {
@@ -140,7 +143,6 @@
           });
         }
 
-        // Actualizamos el gráfico con los nuevos colores/opacidades
         Plotly.react(plotDiv, fig.data, fig.layout, {responsive: true});
       }
     });
